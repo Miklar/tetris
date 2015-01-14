@@ -50,9 +50,6 @@ Elm.Main.make = function (_elm) {
       }),
       board);
    });
-   var Point = F2(function (a,b) {
-      return {_: {},x: a,y: b};
-   });
    var renderRow = function (r) {
       return $Text.asText(r);
    };
@@ -73,7 +70,11 @@ Elm.Main.make = function (_elm) {
    var main = $Graphics$Element.flow($Graphics$Element.down)(renderBoard(A2(writeToBoard,
    board,
    {_: {},x: 0,y: 0})));
+   var Point = F2(function (a,b) {
+      return {_: {},x: a,y: b};
+   });
    _elm.Main.values = {_op: _op
+                      ,Point: Point
                       ,board: board
                       ,cols: cols
                       ,rows: rows
@@ -81,7 +82,6 @@ Elm.Main.make = function (_elm) {
                       ,main: main
                       ,renderBoard: renderBoard
                       ,renderRow: renderRow
-                      ,Point: Point
                       ,writeToBoard: writeToBoard
                       ,writeToRow: writeToRow
                       ,writeToCell: writeToCell

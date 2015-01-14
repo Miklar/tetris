@@ -2451,9 +2451,46 @@ Elm.Main.make = function (_elm) {
    _L = _N.List.make(_elm),
    _P = _N.Ports.make(_elm),
    $moduleName = "Main",
+   $Basics = Elm.Basics.make(_elm),
    $Graphics$Element = Elm.Graphics.Element.make(_elm),
    $List = Elm.List.make(_elm),
    $Text = Elm.Text.make(_elm);
+   var updateIfRight = F2(function (point,
+   i) {
+      return _U.eq(i,
+      point.x) ? 1 : 0;
+   });
+   var writeToCell = F2(function (row,
+   point) {
+      return A2($List.indexedMap,
+      F2(function (i,_v0) {
+         return function () {
+            return A2(updateIfRight,
+            point,
+            i);
+         }();
+      }),
+      row);
+   });
+   var writeToRow = F3(function (row,
+   point,
+   i) {
+      return _U.eq(i,
+      point.y) ? A2(writeToCell,
+      row,
+      point) : row;
+   });
+   var writeToBoard = F2(function (board,
+   point) {
+      return A2($List.indexedMap,
+      F2(function (i,row) {
+         return A3(writeToRow,
+         row,
+         point,
+         i);
+      }),
+      board);
+   });
    var renderRow = function (r) {
       return $Text.asText(r);
    };
@@ -2471,17 +2508,25 @@ Elm.Main.make = function (_elm) {
    rows,
    A2($List.repeat,cols,0));
    var board = createEmptyBoard;
-   var main = A2($Graphics$Element.flow,
-   $Graphics$Element.down,
-   renderBoard(board));
+   var main = $Graphics$Element.flow($Graphics$Element.down)(renderBoard(A2(writeToBoard,
+   board,
+   {_: {},x: 0,y: 0})));
+   var Point = F2(function (a,b) {
+      return {_: {},x: a,y: b};
+   });
    _elm.Main.values = {_op: _op
+                      ,Point: Point
                       ,board: board
                       ,cols: cols
                       ,rows: rows
                       ,createEmptyBoard: createEmptyBoard
                       ,main: main
                       ,renderBoard: renderBoard
-                      ,renderRow: renderRow};
+                      ,renderRow: renderRow
+                      ,writeToBoard: writeToBoard
+                      ,writeToRow: writeToRow
+                      ,writeToCell: writeToCell
+                      ,updateIfRight: updateIfRight};
    return _elm.Main.values;
 };Elm.Maybe = Elm.Maybe || {};
 Elm.Maybe.make = function (_elm) {
