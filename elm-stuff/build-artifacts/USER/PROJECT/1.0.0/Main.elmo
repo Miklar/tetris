@@ -1,0 +1,90 @@
+Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values)
+   return _elm.Main.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Main",
+   $Basics = Elm.Basics.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Text = Elm.Text.make(_elm);
+   var updateIfRight = F2(function (point,
+   i) {
+      return _U.eq(i,
+      point.x) ? 1 : 0;
+   });
+   var writeToCell = F2(function (row,
+   point) {
+      return A2($List.indexedMap,
+      F2(function (i,_v0) {
+         return function () {
+            return A2(updateIfRight,
+            point,
+            i);
+         }();
+      }),
+      row);
+   });
+   var writeToRow = F3(function (row,
+   point,
+   i) {
+      return _U.eq(i,
+      point.y) ? A2(writeToCell,
+      row,
+      point) : row;
+   });
+   var writeToBoard = F2(function (board,
+   point) {
+      return A2($List.indexedMap,
+      F2(function (i,row) {
+         return A3(writeToRow,
+         row,
+         point,
+         i);
+      }),
+      board);
+   });
+   var Point = F2(function (a,b) {
+      return {_: {},x: a,y: b};
+   });
+   var renderRow = function (r) {
+      return $Text.asText(r);
+   };
+   var renderBoard = function (b) {
+      return A2($List.map,
+      renderRow,
+      b);
+   };
+   var $ = {ctor: "_Tuple2"
+           ,_0: 10
+           ,_1: 20},
+   cols = $._0,
+   rows = $._1;
+   var createEmptyBoard = A2($List.repeat,
+   rows,
+   A2($List.repeat,cols,0));
+   var board = createEmptyBoard;
+   var main = $Graphics$Element.flow($Graphics$Element.down)(renderBoard(A2(writeToBoard,
+   board,
+   {_: {},x: 0,y: 0})));
+   _elm.Main.values = {_op: _op
+                      ,board: board
+                      ,cols: cols
+                      ,rows: rows
+                      ,createEmptyBoard: createEmptyBoard
+                      ,main: main
+                      ,renderBoard: renderBoard
+                      ,renderRow: renderRow
+                      ,Point: Point
+                      ,writeToBoard: writeToBoard
+                      ,writeToRow: writeToRow
+                      ,writeToCell: writeToCell
+                      ,updateIfRight: updateIfRight};
+   return _elm.Main.values;
+};
