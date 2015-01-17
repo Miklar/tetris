@@ -2480,17 +2480,21 @@ Elm.Main.make = function (_elm) {
       row,
       point) : row;
    });
-   var writeToBoard = F2(function (board,
-   point) {
-      return A2($List.indexedMap,
-      F2(function (i,row) {
-         return A3(writeToRow,
-         row,
-         point,
-         i);
-      }),
-      board);
-   });
+   var writeToBoard = function (state) {
+      return A2($List.map,
+      function (row) {
+         return A2($List.append,
+         A2($List.take,
+         state.position.x,
+         row),
+         A2($List._op["::"],
+         1,
+         A2($List.drop,
+         state.position.x + 1,
+         row)));
+      },
+      state.board);
+   };
    var renderRow = function (r) {
       return $Text.asText(r);
    };
@@ -2498,6 +2502,9 @@ Elm.Main.make = function (_elm) {
       return A2($List.map,
       renderRow,
       b);
+   };
+   var writePieaceOnBoard = function (state) {
+      return writeToBoard(state);
    };
    var $ = {ctor: "_Tuple2"
            ,_0: 10
@@ -2507,20 +2514,34 @@ Elm.Main.make = function (_elm) {
    var createEmptyBoard = A2($List.repeat,
    rows,
    A2($List.repeat,cols,0));
-   var board = createEmptyBoard;
-   var main = $Graphics$Element.flow($Graphics$Element.down)(renderBoard(A2(writeToBoard,
-   board,
-   {_: {},x: 0,y: 0})));
+   var initialState = {_: {}
+                      ,board: createEmptyBoard
+                      ,piece: _L.fromArray([{_: {}
+                                            ,x: 0
+                                            ,y: 0}
+                                           ,{_: {},x: 1,y: 0}])
+                      ,position: {_: {},x: 2,y: 2}};
+   var main = $Graphics$Element.flow($Graphics$Element.down)(renderBoard(writePieaceOnBoard(initialState)));
+   var State = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,board: a
+             ,piece: c
+             ,position: b};
+   });
    var Point = F2(function (a,b) {
       return {_: {},x: a,y: b};
    });
    _elm.Main.values = {_op: _op
                       ,Point: Point
-                      ,board: board
+                      ,State: State
                       ,cols: cols
                       ,rows: rows
                       ,createEmptyBoard: createEmptyBoard
+                      ,initialState: initialState
                       ,main: main
+                      ,writePieaceOnBoard: writePieaceOnBoard
                       ,renderBoard: renderBoard
                       ,renderRow: renderRow
                       ,writeToBoard: writeToBoard

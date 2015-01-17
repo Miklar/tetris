@@ -1,36 +1,47 @@
-import List(..)
+import List ((::))
+import List
 import Dict
 import Graphics.Element (..)
-import Text (..)
+import Text
 
 type alias Row = List Int
 type alias Board = List (Row)
-
-board : Board
-board = createEmptyBoard
+type alias Point = {x:Int, y:Int}
+type alias Piece = List Point
+type alias State = {board:Board, position:Point, piece:Piece}
 
 (cols, rows) = (10, 20)
 createEmptyBoard : Board
-createEmptyBoard = repeat rows (repeat cols 0)
+createEmptyBoard = List.repeat rows (List.repeat cols 0)
+
+initialState : State
+initialState = {board = createEmptyBoard, position = {x = 2, y = 2}, piece = [{x=0,y=0},{x=1,y=0}]}
 
 main : Element
-main = flow down (renderBoard board)
+main = initialState |> writePieaceOnBoard |> renderBoard |> flow down
+
+writePieaceOnBoard : State -> Board
+writePieaceOnBoard state = writeToBoard state
+
 
 renderBoard : Board -> List Element
-renderBoard b = map renderRow b
+renderBoard b = List.map renderRow b
 
 renderRow : Row -> Element
-renderRow r = asText r
+renderRow r = Text.asText r
 
---pieces = Dict.fromList [ ("I", [[0,0],[0,-1],[0,1],[0,2]]) ]
+writeToBoard : State -> Board
+writeToBoard state = List.map (\row -> List.append (List.take state.position.x row) (1 :: List.drop (state.position.x + 1) row)) state.board
+--writeToBoard state = indexedMap (\i row -> writeToRow row state.position i) state.board
 
-type alias Coordinate = (Int, Int)
+writeToRow : Row -> Point -> Int -> Row
+writeToRow row point i = 
+    if  | i == point.y  -> writeToCell row point
+        | otherwise     -> row
 
---writeToBoard : Board -> Coordinate -> Int -> Board
---writeToBoard board x y val = indexedMap writeToRow board
+writeToCell : Row -> Point -> Row
+writeToCell row point = List.indexedMap (\i _ -> updateIfRight point i) row
 
---writeToRow : Row -> Int -> Row
---writeToRow r i = indexedMap writeToCell r
-
---writeToCell : Int -> Int
---writeToCell c i 
+updateIfRight : Point -> Int -> Int
+updateIfRight point i = if  | i == point.x  -> 1
+                            | otherwise     -> 0
