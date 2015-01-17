@@ -14,60 +14,47 @@ Elm.Main.make = function (_elm) {
    $Graphics$Element = Elm.Graphics.Element.make(_elm),
    $List = Elm.List.make(_elm),
    $Text = Elm.Text.make(_elm);
-   var updateIfRight = F2(function (point,
-   i) {
-      return _U.eq(i,
-      point.x) ? 1 : 0;
+   var writeToRow = F2(function (row,
+   pivot) {
+      return A2($List.append,
+      A2($List.take,pivot,row),
+      A2($List._op["::"],
+      1,
+      A2($List.drop,pivot + 1,row)));
    });
-   var writeToCell = F2(function (row,
-   point) {
-      return A2($List.indexedMap,
-      F2(function (i,_v0) {
-         return function () {
-            return A2(updateIfRight,
-            point,
-            i);
-         }();
-      }),
-      row);
+   var spliceRow = F2(function (pivot,
+   board) {
+      return $List.head(A2($List.drop,
+      pivot,
+      board));
    });
-   var writeToRow = F3(function (row,
-   point,
-   i) {
-      return _U.eq(i,
-      point.y) ? A2(writeToCell,
-      row,
-      point) : row;
+   var writePointToBoard = F2(function (b,
+   p) {
+      return A2($List.append,
+      A2($List.take,p.y,b),
+      A2($List._op["::"],
+      A2(writeToRow,
+      A2(spliceRow,p.y,b),
+      p.x),
+      A2($List.drop,p.y + 1,b)));
    });
-   var writeToBoard = function (state) {
-      return A2($List.map,
-      function (row) {
-         return A2($List.append,
-         A2($List.take,
-         state.position.x,
-         row),
-         A2($List._op["::"],
-         1,
-         A2($List.drop,
-         state.position.x + 1,
-         row)));
-      },
-      state.board);
-   };
    var renderRow = function (r) {
       return $Text.asText(r);
    };
+   var addPoints = F2(function (p1,
+   p2) {
+      return {_: {}
+             ,x: p1.x + p2.x
+             ,y: p1.y + p2.y};
+   });
    var renderBoard = function (b) {
       return A2($List.map,
       renderRow,
       b);
    };
-   var writePieaceOnBoard = function (state) {
-      return writeToBoard(state);
-   };
    var $ = {ctor: "_Tuple2"
            ,_0: 10
-           ,_1: 20},
+           ,_1: 5},
    cols = $._0,
    rows = $._1;
    var createEmptyBoard = A2($List.repeat,
@@ -78,8 +65,18 @@ Elm.Main.make = function (_elm) {
                       ,piece: _L.fromArray([{_: {}
                                             ,x: 0
                                             ,y: 0}
-                                           ,{_: {},x: 1,y: 0}])
-                      ,position: {_: {},x: 2,y: 2}};
+                                           ,{_: {},x: 1,y: -1}])
+                      ,pos: {_: {},x: 2,y: 2}};
+   var writePieaceOnBoard = function (state) {
+      return A3($List.foldl,
+      F2(function (p,acc) {
+         return writePointToBoard(acc)(A2(addPoints,
+         p,
+         state.pos));
+      }),
+      createEmptyBoard,
+      state.piece);
+   };
    var main = $Graphics$Element.flow($Graphics$Element.down)(renderBoard(writePieaceOnBoard(initialState)));
    var State = F3(function (a,
    b,
@@ -87,7 +84,7 @@ Elm.Main.make = function (_elm) {
       return {_: {}
              ,board: a
              ,piece: c
-             ,position: b};
+             ,pos: b};
    });
    var Point = F2(function (a,b) {
       return {_: {},x: a,y: b};
@@ -100,12 +97,12 @@ Elm.Main.make = function (_elm) {
                       ,createEmptyBoard: createEmptyBoard
                       ,initialState: initialState
                       ,main: main
-                      ,writePieaceOnBoard: writePieaceOnBoard
                       ,renderBoard: renderBoard
+                      ,writePieaceOnBoard: writePieaceOnBoard
+                      ,addPoints: addPoints
                       ,renderRow: renderRow
-                      ,writeToBoard: writeToBoard
-                      ,writeToRow: writeToRow
-                      ,writeToCell: writeToCell
-                      ,updateIfRight: updateIfRight};
+                      ,writePointToBoard: writePointToBoard
+                      ,spliceRow: spliceRow
+                      ,writeToRow: writeToRow};
    return _elm.Main.values;
 };
