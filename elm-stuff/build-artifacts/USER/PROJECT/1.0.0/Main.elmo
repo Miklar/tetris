@@ -11,8 +11,12 @@ Elm.Main.make = function (_elm) {
    _P = _N.Ports.make(_elm),
    $moduleName = "Main",
    $Basics = Elm.Basics.make(_elm),
+   $Dict = Elm.Dict.make(_elm),
    $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Keyboard = Elm.Keyboard.make(_elm),
    $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
    $Text = Elm.Text.make(_elm);
    var writeToRow = F2(function (row,
    pivot) {
@@ -47,26 +51,6 @@ Elm.Main.make = function (_elm) {
              ,x: p1.x + p2.x
              ,y: p1.y + p2.y};
    });
-   var renderBoard = function (b) {
-      return A2($List.map,
-      renderRow,
-      b);
-   };
-   var $ = {ctor: "_Tuple2"
-           ,_0: 10
-           ,_1: 5},
-   cols = $._0,
-   rows = $._1;
-   var createEmptyBoard = A2($List.repeat,
-   rows,
-   A2($List.repeat,cols,0));
-   var initialState = {_: {}
-                      ,board: createEmptyBoard
-                      ,piece: _L.fromArray([{_: {}
-                                            ,x: 0
-                                            ,y: 0}
-                                           ,{_: {},x: 1,y: -1}])
-                      ,pos: {_: {},x: 2,y: 2}};
    var writePieaceOnBoard = function (state) {
       return A3($List.foldl,
       F2(function (p,acc) {
@@ -74,10 +58,138 @@ Elm.Main.make = function (_elm) {
          p,
          state.pos));
       }),
-      createEmptyBoard,
+      state.board,
       state.piece);
    };
-   var main = $Graphics$Element.flow($Graphics$Element.down)(renderBoard(writePieaceOnBoard(initialState)));
+   var renderBoard = function (b) {
+      return A2($List.map,
+      renderRow,
+      b);
+   };
+   var $ = {ctor: "_Tuple2"
+           ,_0: 10
+           ,_1: 20},
+   cols = $._0,
+   rows = $._1;
+   var createEmptyBoard = A2($List.repeat,
+   rows,
+   A2($List.repeat,cols,0));
+   var pieces = $Dict.fromList(_L.fromArray([{ctor: "_Tuple2"
+                                             ,_0: "I"
+                                             ,_1: _L.fromArray([{_: {}
+                                                                ,x: 0
+                                                                ,y: 0}
+                                                               ,{_: {}
+                                                                ,x: 0
+                                                                ,y: -1}
+                                                               ,{_: {}
+                                                                ,x: 0
+                                                                ,y: 1}
+                                                               ,{_: {}
+                                                                ,x: 0
+                                                                ,y: 2}])}
+                                            ,{ctor: "_Tuple2"
+                                             ,_0: "J"
+                                             ,_1: _L.fromArray([{_: {}
+                                                                ,x: 0
+                                                                ,y: 0}
+                                                               ,{_: {}
+                                                                ,x: 0
+                                                                ,y: -1}
+                                                               ,{_: {}
+                                                                ,x: 0
+                                                                ,y: 1}
+                                                               ,{_: {}
+                                                                ,x: -1
+                                                                ,y: 1}])}
+                                            ,{ctor: "_Tuple2"
+                                             ,_0: "S"
+                                             ,_1: _L.fromArray([{_: {}
+                                                                ,x: 0
+                                                                ,y: 0}
+                                                               ,{_: {}
+                                                                ,x: -1
+                                                                ,y: 0}
+                                                               ,{_: {}
+                                                                ,x: 0
+                                                                ,y: -1}
+                                                               ,{_: {}
+                                                                ,x: 1
+                                                                ,y: -1}])}
+                                            ,{ctor: "_Tuple2"
+                                             ,_0: "Z"
+                                             ,_1: _L.fromArray([{_: {}
+                                                                ,x: 0
+                                                                ,y: 0}
+                                                               ,{_: {}
+                                                                ,x: -1
+                                                                ,y: -1}
+                                                               ,{_: {}
+                                                                ,x: 0
+                                                                ,y: -1}
+                                                               ,{_: {}
+                                                                ,x: 1
+                                                                ,y: 0}])}
+                                            ,{ctor: "_Tuple2"
+                                             ,_0: "O"
+                                             ,_1: _L.fromArray([{_: {}
+                                                                ,x: 0
+                                                                ,y: 0}
+                                                               ,{_: {}
+                                                                ,x: -1
+                                                                ,y: 0}
+                                                               ,{_: {}
+                                                                ,x: -1
+                                                                ,y: 1}
+                                                               ,{_: {}
+                                                                ,x: 0
+                                                                ,y: 1}])}
+                                            ,{ctor: "_Tuple2"
+                                             ,_0: "T"
+                                             ,_1: _L.fromArray([{_: {}
+                                                                ,x: 0
+                                                                ,y: 0}
+                                                               ,{_: {}
+                                                                ,x: -1
+                                                                ,y: 0}
+                                                               ,{_: {}
+                                                                ,x: 1
+                                                                ,y: 0}
+                                                               ,{_: {}
+                                                                ,x: 0
+                                                                ,y: 1}])}]));
+   var getPiece = function (name) {
+      return function () {
+         var _v0 = A2($Dict.get,
+         name,
+         pieces);
+         switch (_v0.ctor)
+         {case "Just": return _v0._0;
+            case "Nothing":
+            return _L.fromArray([{_: {}
+                                 ,x: -1
+                                 ,y: -1}]);}
+         _U.badCase($moduleName,
+         "between lines 25 and 27");
+      }();
+   };
+   var initialState = {_: {}
+                      ,board: createEmptyBoard
+                      ,piece: getPiece("T")
+                      ,pos: {_: {},x: 2,y: 2}};
+   var main = $Signal.map($Graphics$Element.flow($Graphics$Element.down))($Signal.map(renderBoard)($Signal.map(writePieaceOnBoard)($Signal.map(function (s) {
+      return {_: {}
+             ,board: createEmptyBoard
+             ,piece: getPiece("T")
+             ,pos: s};
+   })(A3($Signal.foldp,
+   F2(function (dir,k) {
+      return {_: {}
+             ,x: k.x + dir.x
+             ,y: 0};
+   }),
+   {_: {},x: 4,y: 0},
+   $Keyboard.arrows)))));
    var State = F3(function (a,
    b,
    c) {
@@ -92,6 +204,8 @@ Elm.Main.make = function (_elm) {
    _elm.Main.values = {_op: _op
                       ,Point: Point
                       ,State: State
+                      ,pieces: pieces
+                      ,getPiece: getPiece
                       ,cols: cols
                       ,rows: rows
                       ,createEmptyBoard: createEmptyBoard
