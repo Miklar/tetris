@@ -2563,6 +2563,9 @@ Elm.Main.make = function (_elm) {
    var createEmptyBoard = A2($List.repeat,
    rows,
    A2($List.repeat,cols,0));
+   var centerTop = {_: {}
+                   ,x: $Basics.round(cols / 2)
+                   ,y: 1};
    var pieces = $Dict.fromList(_L.fromArray([{ctor: "_Tuple2"
                                              ,_0: "I"
                                              ,_1: _L.fromArray([{_: {}
@@ -2662,10 +2665,6 @@ Elm.Main.make = function (_elm) {
          "between lines 25 and 27");
       }();
    };
-   var initialState = {_: {}
-                      ,board: createEmptyBoard
-                      ,piece: getPiece("T")
-                      ,pos: {_: {},x: 2,y: 2}};
    var main = $Signal.map($Graphics$Element.flow($Graphics$Element.down))($Signal.map(renderBoard)($Signal.map(writePieaceOnBoard)($Signal.map(function (s) {
       return {_: {}
              ,board: createEmptyBoard
@@ -2673,11 +2672,11 @@ Elm.Main.make = function (_elm) {
              ,pos: s};
    })(A3($Signal.foldp,
    F2(function (dir,k) {
-      return {_: {}
-             ,x: k.x + dir.x
-             ,y: 0};
+      return _U.replace([["x"
+                         ,dir.x + k.x]],
+      k);
    }),
-   {_: {},x: 4,y: 0},
+   centerTop,
    $Keyboard.arrows)))));
    var State = F3(function (a,
    b,
@@ -2698,7 +2697,7 @@ Elm.Main.make = function (_elm) {
                       ,cols: cols
                       ,rows: rows
                       ,createEmptyBoard: createEmptyBoard
-                      ,initialState: initialState
+                      ,centerTop: centerTop
                       ,main: main
                       ,renderBoard: renderBoard
                       ,writePieaceOnBoard: writePieaceOnBoard

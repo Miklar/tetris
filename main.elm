@@ -26,17 +26,16 @@ getPiece name =
         Just p      -> p
         Nothing     -> [{x=-1, y=-1}]
 
-
 (cols, rows) = (10, 20)
 createEmptyBoard : Board
 createEmptyBoard = List.repeat rows (List.repeat cols 0)
 
-initialState : State
-initialState = {board = createEmptyBoard, pos = {x = 2, y = 2}, piece = getPiece "T"}
+centerTop : Point
+centerTop = { x = round (cols/2), y = 1}
 
 main : Signal Element
 main = 
-    Signal.foldp (\dir k -> {x = k.x + dir.x, y = 0} ) {x=4,y=0} Keyboard.arrows 
+    Signal.foldp (\dir k -> { k | x <- dir.x + k.x }) centerTop Keyboard.arrows 
         |> Signal.map (\s -> {board = createEmptyBoard, pos = s, piece = getPiece "T"})
         |> Signal.map writePieaceOnBoard 
         |> Signal.map renderBoard 
